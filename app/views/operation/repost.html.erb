@@ -1,0 +1,34 @@
+<div class="<%= @is_hashtag_visible ? 'hide' : 'center' %>">
+    <h2 class="header">Let's Re-Tweet!</h2>
+    <span class="black-text">Just enter the twitter handle in the space provided and click on Done.</span>
+</div>
+<div class="<%= @is_hashtag_visible ? 'center' : 'hide' %>">
+    <h2 class="header">Let's Re-Tweet the #Hashtag!</h2>
+    <span class="black-text">Just enter the twitter handle and a popular or recent hashtag in the space provided and click on Done.</span>
+</div>
+<div class="row form-area">
+    <form class="col s12" method="post" action="<%= @is_hashtag_visible ? '/operation/hashtagrt' : '/operation/retweet' %>">
+        <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+      <div class="row">
+        <div class="input-field col s12 m10 l8">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="handle" type="text" class="validate" name="entered_handle">
+          <label for="handle">Twitter Handle @</label>
+        </div>
+      </div>
+      <div class="<%= @is_hashtag_visible ? 'row' : 'hide' %>">
+        <div class="input-field col s12 m10 l8">
+          <i class="material-icons prefix">local_activity</i>
+          <input id="hashtag" type="text" class="validate" name="entered_hashtag">
+          <label for="hashtag">Hashtag #</label>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col s12 center-align">
+              <button class="btn waves-effect waves-light" type="submit" name="action">Done
+                <i class="material-icons right">send</i>
+              </button>
+          </div>
+      </div>
+    </form>
+</div>

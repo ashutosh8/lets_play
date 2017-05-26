@@ -59,4 +59,10 @@ Rails.application.routes.draw do
 
   get 'operation/new' => 'operation#new'
   post 'operation/tweet' => 'operation#tweet'
+  
+  get 'operation/repost' => 'operation#repost'
+  post 'operation/retweet' => 'operation#retweet'
+  
+  get 'operation/htrepost' => 'operation#htrepost'
+  post 'operation/hashtagrt' => 'operation#hashtagrt'
 end

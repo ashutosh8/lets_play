@@ -41,7 +41,6 @@ class TwitterUtility
 		  return {msg: "Successfully sent #{tweet["text"]}", status_code: 200}
 		else
 		  res_failure = JSON.parse(response.body)
-		  binding.pry
 		  res_failure["errors"].each do |err|
 		  	failure_msg = err["message"]
 		  	res_code = err["code"]
@@ -78,15 +77,21 @@ class TwitterUtility
 		request.oauth! http, @consumer_key, @access_token
 		http.start
 		response = http.request request
-
 		# Parse the Tweet if the response code was 200
 		tweet = nil
+		failure_msg = nil
+		res_code = 0
 		if response.code == '200' then
 		  tweet = JSON.parse(response.body)
-		  puts "Successfully sent #{tweet["text"]}"
+		  return {msg: "Successfully sent #{tweet["text"]}", status_code: 200}
 		else
-		  puts "Could not send the Re-Tweet! " +
-		  "Code:#{response.code} Body:#{response.body}"
+		  res_failure = JSON.parse(response.body)
+		  res_failure["errors"].each do |err|
+		  	failure_msg = err["message"]
+		  	res_code = err["code"]
+		  	break;
+		  end
+		  return {msg: "#{failure_msg}", status_code: "#{res_code}"}
 		end
 	end
 	
