@@ -2,6 +2,11 @@
     <div class="nav-wrapper">
       <%= link_to "Let's Play", root_path, class: "brand-logo" %>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <% if session[:user_id].nil?%>
+          <li><%= link_to 'Sign in with Twitter', auth_create_path %></li>
+        <% else %>
+          <li><%= link_to 'Sign out', auth_sign_out_path %></li>
+        <% end %>
         <li><%= link_to 'Home', root_path %></li>
         <li></li>
         <li></li>

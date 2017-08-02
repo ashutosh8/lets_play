@@ -56,6 +56,10 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
   root 'home#index'
+  
+  get 'auth/create' => 'auth#create'
+  get 'auth/callback' => 'auth#callback'
+  get 'auth/sign_out' => 'auth#sign_out'
 
   get 'operation/new' => 'operation#new'
   post 'operation/tweet' => 'operation#tweet'
