@@ -87,3 +87,7 @@ textarea {
   background-color: white !important;
   border-color: green !important;
 }
+#user_name {
+  color: #dddddd !important; 
+}
+

@@ -1,13 +1,5 @@
-require 'rubygems'
-require 'oauth'
-require 'openssl'
-require 'base64'
-require 'json'
-
-class TwitterAuthentication < ActionDispatch::Session::CookieStore
-	# You will need to set your application type to
-	# read/write on dev.twitter.com and regenerate your access
-	# token.  Enter the values here:
+class TwitterAuthentication
+	# Enter the values here:
 	@consumer_token = ENV['TWITTER_CONSUMER_KEY']
 	@consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
 	@callback_url = "https://twiapi-ashutosh3aces.c9users.io/auth/callback"
@@ -24,7 +16,7 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 		return nonce_token
 	end
 	
-	# sort (very important as it affects the signature), concat, and percent encode
+	# sort (very important as it affects the signature), concat, and percent encode all params
     # @ref http://oauth.net/core/1.0/#rfc.section.9.1.1
     # @ref http://oauth.net/core/1.0/#9.2.1
     # @ref http://oauth.net/core/1.0/#rfc.section.A.5.1
@@ -40,12 +32,11 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 		key = OAuth::Helper::escape( @consumer_secret ).gsub('*', '%2A') + '&' + (token_secret.nil? == true ? "" : (OAuth::Helper::escape(token_secret).gsub('*', '%2A')))
 		req_url = OAuth::Helper::escape(address.to_s).gsub('*', '%2A')
 		
-		# create base str. make it an object attr
+		# create base string
 	    # ref http://oauth.net/core/1.0/#anchor14
 	    @base_string = [ 
 		    @req_method, 
-		    req_url, 
-		    # normalization is just x-www-form-urlencoded
+		    req_url,
 		    OAuth::Helper::escape( self.query_string ) 
     	].join( '&' )
 		
@@ -56,14 +47,16 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 	end
 	
 	def self.build_authorization_string(is_callback)
-		auth_string = "OAuth " + "oauth_consumer_key=" + @params['oauth_consumer_key'] + ", oauth_nonce=" + @params['oauth_nonce'] +
+		auth_string = ("OAuth " + "oauth_consumer_key=" + @params['oauth_consumer_key'] + ", oauth_nonce=" + @params['oauth_nonce'] +
 					  ", oauth_signature=" + @params['oauth_signature'] + ", oauth_signature_method=" + @params['oauth_signature_method'] +
 					   ", oauth_timestamp=" + @params['oauth_timestamp'] + ( is_callback == true ? (", oauth_callback=" + @params['oauth_callback'])
-					   : (", oauth_token=" + @params['oauth_token'] + ", oauth_verifier=" + @params['oauth_verifier']) ) + ", oauth_version=" + @params['oauth_version']
+					   : (", oauth_token=" + @params['oauth_token'] + ", oauth_verifier=" + @params['oauth_verifier']) ) + ", oauth_version=" + @params['oauth_version']) unless @params.nil?
+		return auth_string
 	
 	end
 	
 	def self.request_token_from_twitter
+	   begin
 		path    = "/oauth/request_token"
 		address = URI("#{@baseurl}#{path}")
 		request = Net::HTTP::Post.new address.request_uri
@@ -72,7 +65,7 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 		http             = Net::HTTP.new address.host, address.port
 		http.use_ssl     = true
 		http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-
+	
 		@params = {
 	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token).gsub('*', '%2A'),
 	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token).gsub('*', '%2A'),
@@ -83,21 +76,24 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 	    }
 	    @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address)).gsub('*', '%2A')
 	    
-	    #binding.pry
 		request["content-type"] = "application/x-www-form-urlencoded"
 		request["authorization"] = self.build_authorization_string(true)
+		
 		# Issue the request.
 		http.start
 		response = http.request request
 		
 	    if (response.code == '200' && response.body.split('&')[2].split('=')[1].eql?("true"))   #oauth_callback_confirmed == true
-			# session[:user_token] = response.body.split('&')[0].split('=')[1]
-			# session[:user_token_secret] = response.body.split('&')[1].split('=')[1]
-			return response
-			#binding.pry
-			# self.request_access_token_from_twitter
-			# redirect_to @request_token.authorize_url
+			return {msg: response.body, status_code: 200}
+		else
+		  res_failure = JSON.parse(response.body)
+		  failure_msg = res_failure["message"]
+		  res_code = res_failure["code"]
+		  return {msg: "#{failure_msg}", status_code: "#{res_code}"}			
 	    end
+	   rescue => e
+         puts "#{e.message}"
+       end
 	end
 	
 	def self.redirect_to_authenticate(user_token)
@@ -110,17 +106,17 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 	end
 	
 	def self.access_token_from_twitter(oauth_token, oauth_verifier, token_secret)
-	
-		path    = "/oauth/access_token"
-		address = URI("#{@baseurl}#{path}")
-		request = Net::HTTP::Post.new address.request_uri
+	  begin
+	   path    = "/oauth/access_token"
+	   address = URI("#{@baseurl}#{path}")
+	   request = Net::HTTP::Post.new address.request_uri
 		
-	    # Set up HTTP.
-		http             = Net::HTTP.new address.host, address.port
-		http.use_ssl     = true
-		http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+	   # Set up HTTP.
+	   http             = Net::HTTP.new address.host, address.port
+	   http.use_ssl     = true
+	   http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-		@params = {
+	   @params = {
 	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token).gsub('*', '%2A'),
 	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token).gsub('*', '%2A'),
 	      'oauth_signature_method' =>  OAuth::Helper::escape(@sig_method).gsub('*', '%2A'),
@@ -128,21 +124,22 @@ class TwitterAuthentication < ActionDispatch::Session::CookieStore
 	      'oauth_token' => OAuth::Helper::escape(oauth_token).gsub('*', '%2A'),
 	      'oauth_version' =>  OAuth::Helper::escape(@oauth_version).gsub('*', '%2A'),
 	      'oauth_verifier' => OAuth::Helper::escape(oauth_verifier).gsub('*', '%2A')
-	    }
-	    @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address, token_secret)).gsub('*', '%2A')
-	    
-	    #binding.pry
-		request["content-type"] = "application/x-www-form-urlencoded"
-		request["authorization"] = self.build_authorization_string(false)
-		request["oauth_verifier"] = OAuth::Helper::escape(oauth_verifier).gsub('*', '%2A')
+	   }
+	   @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address, token_secret)).gsub('*', '%2A')
+	  
+	   request["content-type"] = "application/x-www-form-urlencoded"
+	   request["authorization"] = self.build_authorization_string(false)
+	   request["oauth_verifier"] = OAuth::Helper::escape(oauth_verifier).gsub('*', '%2A')
 		
-		# Issue the request.
-		http.start
-		response = http.request request
-		#binding.pry
-	    if (response.code == '200')
-			return response
-	    end
+	   # Issue the request.
+	   http.start
+	   response = http.request request
+		
+	   if (response.code == '200')
+	    	return {msg: response.body, status_code: 200}
+	   end
+	  rescue => e
+         puts "#{e.message}"
+      end	  
 	end
-	
 end
