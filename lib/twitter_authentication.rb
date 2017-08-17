@@ -2,7 +2,7 @@ class TwitterAuthentication
 	# Enter the values here:
 	@consumer_token = ENV['TWITTER_CONSUMER_KEY']
 	@consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
-	@callback_url = "https://twiapi-ashutosh3aces.c9users.io/auth/callback"
+	@callback_url = ENV['TWITTER_CALLBACK_URL']
 	@req_method = "POST"
 	@oauth_version = "1.0"
 	@sig_method = "HMAC-SHA1"
@@ -23,14 +23,14 @@ class TwitterAuthentication
     def self.query_string
 	    pairs = []
 	    @params.sort.each { | key, val | 
-	      pairs.push( "#{  OAuth::Helper::escape( key ).gsub('*', '%2A') }=#{ ( val.to_s ) }" )
+	      pairs.push( "#{  OAuth::Helper::escape( key ) }=#{ ( val.to_s ) }" )
 	    }
 	    pairs.join '&'
     end
 	
 	def self.gen_oauth_signature(address, token_secret=nil)
-		key = OAuth::Helper::escape( @consumer_secret ).gsub('*', '%2A') + '&' + (token_secret.nil? == true ? "" : (OAuth::Helper::escape(token_secret).gsub('*', '%2A')))
-		req_url = OAuth::Helper::escape(address.to_s).gsub('*', '%2A')
+		key = OAuth::Helper::escape( @consumer_secret ) + '&' + (token_secret.nil? == true ? "" : (OAuth::Helper::escape(token_secret)))
+		req_url = OAuth::Helper::escape(address.to_s)
 		
 		# create base string
 	    # ref http://oauth.net/core/1.0/#anchor14
@@ -67,14 +67,14 @@ class TwitterAuthentication
 		http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 	
 		@params = {
-	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token).gsub('*', '%2A'),
-	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token).gsub('*', '%2A'),
-	      'oauth_signature_method' =>  OAuth::Helper::escape(@sig_method).gsub('*', '%2A'),
-	      'oauth_timestamp' =>  OAuth::Helper::escape(Time.now.utc.to_i.to_s).gsub('*', '%2A'),
-	      'oauth_version' =>  OAuth::Helper::escape(@oauth_version).gsub('*', '%2A'),
-	      'oauth_callback' => OAuth::Helper::escape(@callback_url).gsub('*', '%2A')
+	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token),
+	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token),
+	      'oauth_signature_method' =>  OAuth::Helper::escape(@sig_method),
+	      'oauth_timestamp' =>  OAuth::Helper::escape(Time.now.utc.to_i.to_s),
+	      'oauth_version' =>  OAuth::Helper::escape(@oauth_version),
+	      'oauth_callback' => OAuth::Helper::escape(@callback_url)
 	    }
-	    @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address)).gsub('*', '%2A')
+	    @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address))
 	    
 		request["content-type"] = "application/x-www-form-urlencoded"
 		request["authorization"] = self.build_authorization_string(true)
@@ -117,19 +117,19 @@ class TwitterAuthentication
 	   http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
 	   @params = {
-	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token).gsub('*', '%2A'),
-	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token).gsub('*', '%2A'),
-	      'oauth_signature_method' =>  OAuth::Helper::escape(@sig_method).gsub('*', '%2A'),
-	      'oauth_timestamp' =>  OAuth::Helper::escape(Time.now.utc.to_i.to_s).gsub('*', '%2A'),
-	      'oauth_token' => OAuth::Helper::escape(oauth_token).gsub('*', '%2A'),
-	      'oauth_version' =>  OAuth::Helper::escape(@oauth_version).gsub('*', '%2A'),
-	      'oauth_verifier' => OAuth::Helper::escape(oauth_verifier).gsub('*', '%2A')
+	      'oauth_consumer_key' =>  OAuth::Helper::escape(@consumer_token),
+	      'oauth_nonce' =>  OAuth::Helper::escape(gen_nonce_token),
+	      'oauth_signature_method' =>  OAuth::Helper::escape(@sig_method),
+	      'oauth_timestamp' =>  OAuth::Helper::escape(Time.now.utc.to_i.to_s),
+	      'oauth_token' => OAuth::Helper::escape(oauth_token),
+	      'oauth_version' =>  OAuth::Helper::escape(@oauth_version),
+	      'oauth_verifier' => OAuth::Helper::escape(oauth_verifier)
 	   }
-	   @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address, token_secret)).gsub('*', '%2A')
+	   @params['oauth_signature'] =  OAuth::Helper::escape(gen_oauth_signature(address, token_secret))
 	  
 	   request["content-type"] = "application/x-www-form-urlencoded"
 	   request["authorization"] = self.build_authorization_string(false)
-	   request["oauth_verifier"] = OAuth::Helper::escape(oauth_verifier).gsub('*', '%2A')
+	   request["oauth_verifier"] = OAuth::Helper::escape(oauth_verifier)
 		
 	   # Issue the request.
 	   http.start
