@@ -44,11 +44,7 @@ class AuthController < ApplicationController
     
     def sign_out
       begin
-        session[:user_token] = nil
-		session[:user_token_secret] = nil
-		session[:user_id] = nil
-		session[:user_screen_name] = nil
-		session[:access_token] = nil
+        reset_session
 		redirect_to root_path
 	  rescue => e
           flash[:alert] = e.message
