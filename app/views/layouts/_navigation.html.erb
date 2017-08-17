@@ -5,7 +5,7 @@
         <% if session[:user_id].nil?%>
           <li><%= link_to 'Sign in with Twitter', auth_create_path %></li>
         <% else %>
-          <li id="user_name">Welcome, <%= session[:user_screen_name] %></li>
+          <li id="user_name"><%= image_tag("/assets/Twitter_Social_Icon_Circle_Color.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
           <li><%= link_to 'Sign out', auth_sign_out_path %></li>
         <% end %>
         <li><%= link_to 'Home', root_path %></li>

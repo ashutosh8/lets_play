@@ -91,3 +91,9 @@ textarea {
   color: #dddddd !important; 
 }
 
+.logo-name-pair {
+      vertical-align: middle;
+      padding: 4px;
+      height: 30px !important;
+}
+
