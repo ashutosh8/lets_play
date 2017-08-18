@@ -1,5 +1,5 @@
 body {
-   background-color: #eee;
+   background-color: #E0E0E0;
  }
 main {
   background-color: #E0E0E0;
@@ -89,11 +89,32 @@ textarea {
 }
 #user_name {
   color: #dddddd !important; 
+  font-family: Helvetica Neue Pro;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+#user_name:hover{
+  color: rgba(11, 1, 25, 0.58) !important;
+  cursor: pointer;
 }
 
 .logo-name-pair {
-      vertical-align: middle;
-      padding: 4px;
-      height: 30px !important;
+  vertical-align: middle;
+  padding: 4px;
+  height: 30px !important;
+}
+
+.top-nav-style {
+  height: 75px !important;
+}
+
+.mobile-menu-color {
+  color: #102711 !important;
+}
+
+.nav-wrapper-style {
+  height: 4% !important;
+  line-height: 70px !important;
 }
 

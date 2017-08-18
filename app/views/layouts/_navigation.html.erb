@@ -1,5 +1,5 @@
-<nav>
-    <div class="nav-wrapper">
+<nav class="top-nav top-nav-style">
+    <div class="nav-wrapper nav-wrapper-style">
       <%= link_to "Let's Play", root_path, class: "brand-logo" %>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <% if session[:user_id].nil?%>
@@ -13,4 +13,22 @@
         <li></li>
       </ul>
     </div>
+    <a href="#" data-activates="slide-out" class="button-collapse full hide-on-large-only mobile-menu-color"><i class="material-icons">menu</i></a>
 </nav>
+<ul id="slide-out" class="side-nav">
+  <li>
+    <div class="user-view">
+       <div class="background">
+         <a class="brand-logo" href="/">Let's Play</a>
+      </div>
+    </div>
+  </li>
+  <% if session[:user_id].nil?%>
+    <li><%= link_to 'Sign in with Twitter', auth_create_path, class: "waves-effect" %></li>
+  <% else %>
+    <li id="user_name"><%= image_tag("/assets/Twitter_Social_Icon_Circle_Color.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
+    <li><%= link_to 'Sign out', auth_sign_out_path, class: "waves-effect" %></li>
+  <% end %>  
+  <li><a href="/" class="waves-effect">Home</a></li>
+  
+</ul>
