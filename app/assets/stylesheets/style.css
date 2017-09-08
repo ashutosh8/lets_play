@@ -118,3 +118,24 @@ textarea {
   line-height: 70px !important;
 }
 
+#nav-large > li > a {
+  color: #dddddd !important;
+}
+
+.mobile-menu-style {
+  background-color: #dcdcdc !important;
+}
+
+li > .active {
+  background-color: #20b2aa !important;
+}
+
+@media only screen and (max-width: 992px) {
+  #user_name {
+    color: #008080 !important;
+  }
+  
+  li > a {
+    color: #008080 !important;;
+  }
+}
