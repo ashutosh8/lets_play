@@ -28,8 +28,8 @@ class AuthController < ApplicationController
     		 session[:user_screen_name] = res[:msg].split('&')[3].split('=')[1]
     		 session[:access_token] = {token: session[:user_token].to_s, secret: session[:user_token_secret].to_s}
     		 if(User.exists?(twi_id: session[:user_id]))
-    		     @db_user_id = User.find_by(twi_id: session[:user_id])
-        		 @user = User.update(@db_user_id.id, {last_login_at: DateTime.now})
+    		     @db_user = User.find_by(twi_id: session[:user_id])
+        		 User.update(@db_user.id, {last_login_at: DateTime.now})
     		 else
     		     @user = User.new({twi_id: session[:user_id], twi_screen_name: session[:user_screen_name], last_login_at: DateTime.now})
         		 @user.save

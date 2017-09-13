@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170912143358) do
+ActiveRecord::Schema.define(version: 20170913073641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,5 +23,7 @@ ActiveRecord::Schema.define(version: 20170912143358) do
     t.datetime "updated_at",      null: false
     t.datetime "last_login_at"
   end
+
+  add_index "users", ["twi_id", "twi_screen_name"], name: "index_users_on_twi_id_and_twi_screen_name", unique: true, using: :btree
 
 end
