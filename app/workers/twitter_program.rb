@@ -2,7 +2,7 @@ require 'rubygems'
 require 'oauth'
 require 'json'
 
-class TwitterUtility
+class TwitterProgram
 	# You will need to set your application type to
 	# read/write on dev.twitter.com and regenerate your access
 	# token.  Enter the values here:
