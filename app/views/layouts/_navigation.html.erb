@@ -4,9 +4,9 @@
       <ul id="nav-large" class="right hide-on-med-and-down">
         <% if session[:user_id].nil?%>
           <li><%= link_to 'Home', root_path %></li>
-          <li><%= link_to image_tag("/assets/Twitter_Logo_Blue.png", class: "logo-name-pair") + 'Sign in with Twitter', auth_create_path %></li>
+          <li><%= link_to image_tag("Twitter_Logo_Blue.png", class: "logo-name-pair") + 'Sign in with Twitter', auth_create_path %></li>
         <% else %>
-          <li id="user_name"><%= image_tag("/assets/Twitter_Logo_Blue.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
+          <li id="user_name"><%= image_tag("Twitter_Logo_Blue.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
           <li><%= link_to 'Home', root_path %></li>
           <li><%= link_to 'Sign out', auth_sign_out_path %></li>
         <% end %>
@@ -29,9 +29,9 @@
       </li>
       <% if session[:user_id].nil?%>
         <li><a href="/" class="waves-effect">Home</a></li>
-        <li><%= link_to image_tag("/assets/Twitter_Logo_Blue.png", class: "logo-name-pair") + 'Sign in with Twitter', auth_create_path, class: "waves-effect" %></li>
+        <li><%= link_to image_tag("Twitter_Logo_Blue.png", class: "logo-name-pair") + 'Sign in with Twitter', auth_create_path, class: "waves-effect" %></li>
       <% else %>
-        <li id="user_name"><%= image_tag("/assets/Twitter_Logo_Blue.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
+        <li id="user_name"><%= image_tag("Twitter_Logo_Blue.png", class: "logo-name-pair")%>@<%= session[:user_screen_name] %></li>
         <li><a href="/" class="waves-effect">Home</a></li>
         <li><%= link_to 'Sign out', auth_sign_out_path, class: "waves-effect" %></li>
       <% end %>
